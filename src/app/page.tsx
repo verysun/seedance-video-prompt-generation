@@ -18,11 +18,29 @@ const EXAMPLE_PROMPTS = [
   '一双高端运动鞋在混凝土台面上的广告展示，强调质感和设计感',
   '霓虹闪烁的赛博朋克城市夜景，一个戴面具的人在雨中行走',
   '春天的樱花树下，花瓣随风飘落，一只橘猫懒洋洋地打盹',
+  '一列蒸汽火车在秋天的山谷中穿行，金黄落叶漫天飞舞',
+  '深海中一头巨大鲸鱼缓缓游过，周围发光的水母群漂浮',
+  '老上海弄堂里一个旗袍女子撑伞走过，石板路泛着雨光',
+  '宇航员漂浮在空间站窗前，窗外是壮丽的地球日出',
+  '一个小女孩在向日葵花田里奔跑，阳光透过花瓣洒下金色光斑',
+  '雪山之巅的寺庙，僧人在晨雾中敲响古钟，云海翻涌',
+  '未来城市的空中赛道上，飞行摩托竞速，尾焰划破夜空',
+  '一只白色柴犬在秋天的银杏大道上追逐落叶，画面温暖',
+  '水墨画风格，仙鹤掠过山水之间，云雾缭绕如仙境',
+  '复古胶片质感，一对情侣在80年代的游乐场里骑旋转木马',
 ];
+
+const EXAMPLES_PER_PAGE = 5;
 
 export default function Home() {
   // Input state
   const [description, setDescription] = useState('');
+  const [examplePage, setExamplePage] = useState(0);
+  const totalExamplePages = Math.ceil(EXAMPLE_PROMPTS.length / EXAMPLES_PER_PAGE);
+  const currentExamples = EXAMPLE_PROMPTS.slice(
+    examplePage * EXAMPLES_PER_PAGE,
+    (examplePage + 1) * EXAMPLES_PER_PAGE
+  );
   const [totalDuration, setTotalDuration] = useState(60);
   const [style, setStyle] = useState('custom');
   const [storyboardMethod, setStoryboardMethod] = useState('auto');
@@ -188,17 +206,27 @@ export default function Home() {
               className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/10 text-white placeholder-gray-600 text-sm leading-relaxed resize-none focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/30 transition-all"
             />
             {/* Example prompts */}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 items-center">
               <span className="text-xs text-gray-500">试试：</span>
-              {EXAMPLE_PROMPTS.map((example, i) => (
+              {currentExamples.map((example, i) => (
                 <button
-                  key={i}
+                  key={`${examplePage}-${i}`}
                   onClick={() => setDescription(example)}
                   className="text-xs text-violet-400/60 hover:text-violet-400 transition-colors truncate max-w-[200px]"
                 >
                   {example}
                 </button>
               ))}
+              <button
+                onClick={() => setExamplePage((prev) => (prev + 1) % totalExamplePages)}
+                className="text-xs text-gray-500 hover:text-violet-400 transition-colors flex items-center gap-0.5 ml-1 shrink-0"
+                title="换一批"
+              >
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                换一批
+              </button>
             </div>
           </div>
 
