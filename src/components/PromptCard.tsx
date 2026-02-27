@@ -3,6 +3,13 @@
 import { useState } from 'react';
 import { CopyButton } from './CopyButton';
 
+interface DialogueLine {
+  character: string;
+  line: string;
+  emotion?: string;
+  timing?: string;
+}
+
 interface VideoSegment {
   index: number;
   duration: string;
@@ -12,6 +19,7 @@ interface VideoSegment {
   shotTypes: string;
   storyboardMethod: string;
   connectionToNext: string | null;
+  dialogue?: DialogueLine[];
 }
 
 interface PromptCardProps {
@@ -21,6 +29,17 @@ interface PromptCardProps {
 
 export function PromptCard({ segment, isLast }: PromptCardProps) {
   const [expanded, setExpanded] = useState(false);
+
+  // Build full text including dialogue for copy
+  const segmentFullText = (() => {
+    let text = segment.prompt;
+    if (segment.dialogue && segment.dialogue.length > 0) {
+      text += '\n\n【对话/台词】\n' + segment.dialogue.map(d =>
+        `${d.character}${d.emotion ? `（${d.emotion}）` : ''}：「${d.line}」${d.timing ? ` [${d.timing}]` : ''}`
+      ).join('\n');
+    }
+    return text;
+  })();
 
   // Highlight camera/shot keywords in prompt text
   const highlightPrompt = (text: string) => {
@@ -73,7 +92,7 @@ export function PromptCard({ segment, isLast }: PromptCardProps) {
             <span className="text-xs text-gray-400">{segment.duration}</span>
           </div>
         </div>
-        <CopyButton text={segment.prompt} label="复制提示词" />
+        <CopyButton text={segmentFullText} label="复制提示词" />
       </div>
 
       {/* Prompt content */}
@@ -91,6 +110,50 @@ export function PromptCard({ segment, isLast }: PromptCardProps) {
           {segment.storyboardMethod}
         </span>
       </div>
+
+      {/* Dialogue section */}
+      {segment.dialogue && segment.dialogue.length > 0 && (
+        <div className="mx-5 mb-3 rounded-xl bg-gradient-to-br from-emerald-500/5 to-teal-500/5 border border-emerald-500/15 overflow-hidden">
+          <div className="px-4 py-2 bg-emerald-500/5 border-b border-emerald-500/10 flex items-center gap-2">
+            <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            <span className="text-xs font-medium text-emerald-400">对话/台词</span>
+          </div>
+          <div className="px-4 py-3 space-y-2.5">
+            {segment.dialogue.map((d, i) => (
+              <div key={i} className="flex gap-3 items-start">
+                <div className="flex-shrink-0 mt-0.5">
+                  <span className={`inline-flex items-center justify-center text-[10px] font-bold px-1.5 py-0.5 rounded-md ${
+                    d.character === '旁白'
+                      ? 'bg-purple-500/15 text-purple-400 border border-purple-500/20'
+                      : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20'
+                  }`}>
+                    {d.character}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-gray-200 leading-relaxed">
+                    &ldquo;{d.line}&rdquo;
+                  </p>
+                  <div className="flex gap-2 mt-1">
+                    {d.emotion && (
+                      <span className="text-[10px] text-amber-400/70 bg-amber-500/10 px-1.5 py-0.5 rounded">
+                        {d.emotion}
+                      </span>
+                    )}
+                    {d.timing && (
+                      <span className="text-[10px] text-cyan-400/70 bg-cyan-500/10 px-1.5 py-0.5 rounded">
+                        {d.timing}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Expandable details */}
       <div className="border-t border-white/5">

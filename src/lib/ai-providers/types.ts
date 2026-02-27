@@ -10,6 +10,13 @@ export interface GenerateRequest {
   customStyle?: string;
 }
 
+export interface DialogueLine {
+  character: string;
+  line: string;
+  emotion?: string;
+  timing?: string;
+}
+
 export interface VideoSegment {
   index: number;
   duration: string;
@@ -19,6 +26,7 @@ export interface VideoSegment {
   shotTypes: string;
   storyboardMethod: string;
   connectionToNext: string | null;
+  dialogue?: DialogueLine[];
 }
 
 export interface GenerateResponse {

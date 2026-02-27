@@ -45,7 +45,7 @@ export default function Home() {
   const [style, setStyle] = useState('custom');
   const [storyboardMethod, setStoryboardMethod] = useState('auto');
   const [customStyle, setCustomStyle] = useState('');
-
+  const [enableDialogue, setEnableDialogue] = useState(true);
   // Provider state
   const [provider, setProvider] = useState<ProviderType>('openai');
   const [apiKey, setApiKey] = useState('');
@@ -79,6 +79,7 @@ export default function Home() {
           style,
           storyboardMethod,
           customStyle: style === 'custom' ? customStyle : '',
+          enableDialogue,
           provider,
           apiKey: apiKey || undefined,
           baseURL: baseURL || undefined,
@@ -150,9 +151,17 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [description, totalDuration, style, storyboardMethod, customStyle, provider, apiKey, baseURL, model]);
+  }, [description, totalDuration, style, storyboardMethod, customStyle, enableDialogue, provider, apiKey, baseURL, model]);
 
-  const allPrompts = result?.segments.map((s, i) => `=== 第${i + 1}段：${s.title}（${s.duration}）===\n\n${s.prompt}`).join('\n\n---\n\n') || '';
+  const allPrompts = result?.segments.map((s, i) => {
+    let text = `=== 第${i + 1}段：${s.title}（${s.duration}）===\n\n${s.prompt}`;
+    if (s.dialogue && s.dialogue.length > 0) {
+      text += '\n\n【对话/台词】\n' + s.dialogue.map(d =>
+        `${d.character}${d.emotion ? `（${d.emotion}）` : ''}：「${d.line}」${d.timing ? ` [${d.timing}]` : ''}`
+      ).join('\n');
+    }
+    return text;
+  }).join('\n\n---\n\n') || '';
 
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
@@ -252,6 +261,33 @@ export default function Home() {
 
           {/* Storyboard method */}
           <StoryboardMethodSelector value={storyboardMethod} onChange={setStoryboardMethod} />
+
+          {/* Dialogue toggle */}
+          <div className="flex items-center justify-between p-4 rounded-xl bg-black/20 border border-white/10">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+              </div>
+              <div>
+                <span className="text-sm font-medium text-gray-300">生成对话/台词</span>
+                <p className="text-xs text-gray-500 mt-0.5">根据剧本场景自动生成角色对白、旁白、内心独白等</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setEnableDialogue(!enableDialogue)}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${
+                enableDialogue ? 'bg-emerald-500' : 'bg-gray-600'
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${
+                  enableDialogue ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </div>
 
           {/* AI Provider */}
           <ProviderSelector

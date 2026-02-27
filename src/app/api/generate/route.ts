@@ -13,6 +13,7 @@ export async function POST(request: NextRequest) {
       style = 'custom',
       storyboardMethod = 'auto',
       customStyle = '',
+      enableDialogue = true,
       provider = 'openai',
       apiKey,
       baseURL,
@@ -51,6 +52,7 @@ export async function POST(request: NextRequest) {
       styleRhythm: styleInfo?.rhythm || '',
       methodLabel: methodInfo?.label || '自动推荐',
       customStyle,
+      enableDialogue,
     });
 
     // Use streaming response
@@ -110,8 +112,15 @@ function buildUserPrompt(params: {
   styleRhythm: string;
   methodLabel: string;
   customStyle: string;
+  enableDialogue: boolean;
 }): string {
-  const { description, totalDuration, segments, styleLabel, styleRhythm, methodLabel, customStyle } = params;
+  const { description, totalDuration, segments, styleLabel, styleRhythm, methodLabel, customStyle, enableDialogue } = params;
+
+  const dialogueInstruction = enableDialogue
+    ? `6. 为每段生成合适的对话/台词（dialogue 字段），包含角色名、台词内容、情感状态和出现时机
+7. 对话设计原则：简短有力（每句≤15字）、贴合画面情绪、少即是多（每段最多2-3句）
+8. 根据视频风格选择对话类型：叙事用角色对白，治愈用旁白/独白，广告用品牌口号，纯风景可不加对白`
+    : `6. dialogue 字段设为空数组，不生成对话`;
 
   return `请根据以下视频构想，生成 Seedance 2.0 专用提示词。
 
@@ -124,6 +133,7 @@ ${description}
 - 视频风格：${styleLabel}${styleRhythm ? `（节奏：${styleRhythm}）` : ''}
 ${customStyle ? `- 自定义风格补充：${customStyle}` : ''}
 - 分镜写法偏好：${methodLabel}
+- 对话生成：${enableDialogue ? '是（根据场景自动生成角色对白/旁白/独白）' : '否'}
 
 ## 重要要求
 1. 每段的 prompt 字段必须是完整的、可直接复制到 Seedance 2.0 使用的提示词
@@ -131,6 +141,7 @@ ${customStyle ? `- 自定义风格补充：${customStyle}` : ''}
 3. 段与段之间的画面和运镜要保持连贯衔接
 4. 遵守五条铁律：动作写慢写连续、运镜写稳写简单、必加稳定约束词、必加角色约束词、模糊词换精确词
 5. 同时生成一个九宫格分镜图提示词（gridPrompt），方便用户在豆包/即梦中生成分镜参考图
+${dialogueInstruction}
 
 请以 JSON 格式输出。`;
 }
