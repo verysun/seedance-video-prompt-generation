@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { UserMenu } from '@/components/UserMenu';
 
 interface Template {
   id: string;
@@ -213,6 +214,8 @@ export default function TemplatesPage() {
             <Link href="/dictionary" className="text-gray-400 hover:text-white transition-colors">
               运镜词典
             </Link>
+            <div className="w-px h-4 bg-white/10 mx-1" />
+            <UserMenu />
           </nav>
         </div>
       </header>
@@ -229,11 +232,10 @@ export default function TemplatesPage() {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-1.5 rounded-full text-sm transition-all ${
-                activeCategory === cat
+              className={`px-4 py-1.5 rounded-full text-sm transition-all ${activeCategory === cat
                   ? 'bg-violet-600 text-white'
                   : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
-              }`}
+                }`}
             >
               {cat}
             </button>
@@ -264,11 +266,10 @@ export default function TemplatesPage() {
                 </div>
                 <button
                   onClick={() => handleCopy(template)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                    copiedId === template.id
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${copiedId === template.id
                       ? 'bg-green-500/20 text-green-300'
                       : 'bg-white/5 text-gray-400 hover:bg-violet-500/20 hover:text-violet-300'
-                  }`}
+                    }`}
                 >
                   {copiedId === template.id ? '✓ 已复制' : '复制'}
                 </button>
