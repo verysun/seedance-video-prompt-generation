@@ -10,6 +10,7 @@ import { GridPromptCard } from '@/components/GridPromptCard';
 import { LoadingState } from '@/components/LoadingState';
 import { CopyButton } from '@/components/CopyButton';
 import { GenerateResponse } from '@/lib/ai-providers';
+import { UserMenu } from '@/components/UserMenu';
 import Link from 'next/link';
 
 const EXAMPLE_PROMPTS = [
@@ -186,6 +187,8 @@ export default function Home() {
             <Link href="/templates" className="text-gray-400 hover:text-white transition-colors">
               模板库
             </Link>
+            <div className="w-px h-4 bg-white/10 mx-1" />
+            <UserMenu />
           </nav>
         </div>
       </header>
@@ -277,14 +280,12 @@ export default function Home() {
             </div>
             <button
               onClick={() => setEnableDialogue(!enableDialogue)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${
-                enableDialogue ? 'bg-emerald-500' : 'bg-gray-600'
-              }`}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${enableDialogue ? 'bg-emerald-500' : 'bg-gray-600'
+                }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${
-                  enableDialogue ? 'translate-x-6' : 'translate-x-1'
-                }`}
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${enableDialogue ? 'translate-x-6' : 'translate-x-1'
+                  }`}
               />
             </button>
           </div>
@@ -305,11 +306,10 @@ export default function Home() {
           <button
             onClick={handleGenerate}
             disabled={loading || !description.trim()}
-            className={`w-full py-4 rounded-xl text-white font-bold text-lg transition-all duration-300 ${
-              loading || !description.trim()
+            className={`w-full py-4 rounded-xl text-white font-bold text-lg transition-all duration-300 ${loading || !description.trim()
                 ? 'bg-gray-700 cursor-not-allowed opacity-50'
                 : 'bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 shadow-lg shadow-violet-500/20 hover:shadow-violet-500/40 active:scale-[0.99]'
-            }`}
+              }`}
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">

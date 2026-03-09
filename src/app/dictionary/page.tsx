@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Metadata } from 'next';
+import { UserMenu } from '@/components/UserMenu';
 
 export const metadata: Metadata = {
   title: '运镜词典 - AI 视频提示词生成器',
@@ -30,6 +31,8 @@ export default function DictionaryPage() {
             <Link href="/templates" className="text-gray-400 hover:text-white transition-colors">
               模板库
             </Link>
+            <div className="w-px h-4 bg-white/10 mx-1" />
+            <UserMenu />
           </nav>
         </div>
       </header>
@@ -329,9 +332,8 @@ export default function DictionaryPage() {
                     return (
                       <div
                         key={j}
-                        className={`h-8 rounded flex items-center justify-center text-xs text-white/80 ${
-                          j === 0 ? 'bg-violet-500/30' : j === 1 ? 'bg-violet-500/50' : 'bg-violet-500/20'
-                        }`}
+                        className={`h-8 rounded flex items-center justify-center text-xs text-white/80 ${j === 0 ? 'bg-violet-500/30' : j === 1 ? 'bg-violet-500/50' : 'bg-violet-500/20'
+                          }`}
                         style={{ flex: seconds }}
                       >
                         {part}
