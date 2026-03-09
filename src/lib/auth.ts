@@ -22,7 +22,7 @@ export async function decrypt(input: string): Promise<any> {
 
 export async function login(password: string) {
   const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
-  
+
   if (password === adminPassword) {
     // Session expires in 24 hours
     const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
@@ -30,7 +30,8 @@ export async function login(password: string) {
 
     // Save the session in a cookie
     const cookieStore = await cookies();
-    cookieStore.set('session', session, { expires, httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+    const isSecure = process.env.NODE_ENV === 'production' && process.env.SECURE_COOKIE === 'true';
+    cookieStore.set('session', session, { expires, httpOnly: true, secure: isSecure });
     return true;
   }
   return false;
